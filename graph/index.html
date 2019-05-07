@@ -1,0 +1,1183 @@
+<!doctype html>
+<head>
+<meta charset="utf-8">
+<title>G</title>
+<script src="//d3plus.org/js/d3.js"></script>
+<script src="//d3plus.org/js/d3plus.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC:400,700" rel="stylesheet">
+<style>
+	h2{
+		font-weight: 700;
+		font-family: 'Playfair Display SC', serif;
+		text-align:center;
+		line-height: .8em;
+		margin:0;padding:0;
+	}
+	h3{
+		font-weight: 400;
+		font-family: 'Playfair Display SC', serif;
+		text-align:center;
+		line-height: .8em;
+		margin:0;padding:0;
+
+	}
+	img{
+		width: 100%;
+		margin:0;padding:0;
+	}
+	#viz{
+		width: 75%;
+		position: absolute;
+		left: 25%;
+		margin:0;padding:10px;
+		height: 100%;
+	}
+	#legend{
+		position: absolute;
+		background-color: #fff;
+		left: 10px;
+		top: 10px;
+		width: 21%;
+		height: auto;
+		padding: 20px;
+		z-index: 1000;
+		box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 3px !important;
+		font-family: "Helvetica Neue", sanserif;
+	}
+	#legend p, li{
+		font-size: .8em;
+		font-weight: 200;
+		line-height: 1.5em;
+	}
+	.authorship{
+		background-color: #3d4575;
+		padding: 2px;
+		margin:2px;
+		border-radius: 2px;
+		color: white;
+	}
+	.dedication{
+		background-color: #425e3a;
+		padding: 2px;
+		margin:2px;
+		border-radius: 2px;
+		color: white;
+	}
+	.illustration{
+		background-color: #b07045;
+		padding: 2px;
+		margin:2px;
+		border-radius: 2px;
+		color: white;
+	}
+	.preliminaries{
+		background-color: #e6cf6c;
+		padding: 2px;
+		margin:2px;
+		color: white;
+		border-radius: 2px;
+	}	
+	.laborofprinting{
+		background-color: #ad442f;
+		padding: 2px;
+		margin:2px;
+		border-radius: 2px;
+	}
+	.music{
+		background-color: #6b5b85;
+		padding: 2px;
+		margin: 2px;
+		border-radius: 2px;
+		color: white;
+	}
+</style>
+</head>
+<body>
+
+<div id="legend">
+	<h3>The</h3>
+	<h2>Social Network</h2>
+	<h3>of</h3>
+	<img src="moseley.jpg">
+<p>This graph shows the number of people involved directly or indirectly in the making of books published by Humphrey Moseley. Each count is broken down according to the type of involvement:</p>
+<ul>
+<li>those involved in the <span class="laborofprinting">labor of printing</span>;</li>
+<li><span class="authorship">authors</span>;</li>
+<li>writers who contributed <span class="preliminaries">preliminary texts</span> (commendatory verse, letters to the reader);</li>
+<li><span class="illustration">engravers</span> who contributed illustrations;</li>
+<li>named <span class="dedication">dedicatees</span>;</li>
+<li>and named <span class="music">composers</span> who set portions of the text to music.</li>
+</ul> 
+
+<p>For accessibility purposes, the graph is restricted to the 25 books with the highest number of people involved. Download and explore the <a href="https://github.com/wtrettien/moseley/blob/master/data/count-of-edges-for-books.csv" target="_blank">entire dataset</a> at this project's <a href="https://github.com/wtrettien/moseley" target="_blank">GitHub repository</a>.</p>
+</div>
+<div id="viz"></div>
+
+<script>
+
+  var data = [
+  {
+    "book": "William Cartwright, Comedies, tragi-comedies, with other poems (1651)",
+    "year": 1651,
+    "id": "b0071",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Francis Beaumont, Comedies and tragedies (1647)",
+    "year": 1647,
+    "id": "b0026",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Edward Benlowes, Theophila, or, Loves sacrifice (1652)",
+    "year": 1652,
+    "id": "b0032",
+    "type": "those involved in the labor of printing",
+    "number of people": 3
+  },
+  {
+    "book": "Nicholas Murford, Fragmenta poetica (1650)",
+    "year": 1650,
+    "id": "b0201",
+    "type": "those involved in the labor of printing",
+    "number of people": 1
+  },
+  {
+    "book": "Nathaniel Whiting, Le hore di recreatione: or, The pleasant historie of Albino and Bellama (1637)",
+    "year": 1637,
+    "id": "b0313",
+    "type": "those involved in the labor of printing",
+    "number of people": 4
+  },
+  {
+    "book": "Diego de San Pedro, A small treatise betwixt Arnalte and Lucenda entituled The evill-intreated lover (1639)",
+    "year": 1639,
+    "id": "b0333",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Thomas De Grey, The compleat horse-man (1656)",
+    "year": 1656,
+    "id": "b0092",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Giovanni Francesco Biondi, Donzella desterrada (1635)",
+    "year": 1635,
+    "id": "b0323",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "John Gamble, Ayres and dialogues (1657)",
+    "year": 1657,
+    "id": "b0362",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Henry Lawes, Choice Psalmes put into musick (1648)",
+    "year": 1648,
+    "id": "b0172",
+    "type": "those involved in the labor of printing",
+    "number of people": 3
+  },
+  {
+    "book": "Virgilio Malvezzi, Romvlvs ; and, Tarqvin (1648)",
+    "year": 1648,
+    "id": "b0184",
+    "type": "those involved in the labor of printing",
+    "number of people": 1
+  },
+  {
+    "book": "William Lithgow, The totall discourse, of the rare aduentures, and painefull peregrinations of long nineteene yeares trauayles, from Scotland, to the most famous kingdomes in Europe, Asia, and Affrica (1632)",
+    "year": 1632,
+    "id": "b0319",
+    "type": "those involved in the labor of printing",
+    "number of people": 3
+  },
+  {
+    "book": "Thomas Barker, Barker's delight: or, The art of angling (1659)",
+    "year": 1659,
+    "id": "b0023",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "John Fletcher, The wild-goose chase a comedie (1652)",
+    "year": 1652,
+    "id": "b0112",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "James Shirley, Poems, &c. (1646)",
+    "year": 1646,
+    "id": "b0258",
+    "type": "those involved in the labor of printing",
+    "number of people": 3
+  },
+  {
+    "book": "Magnus Olaus, A compendious history of the Goths, Svvedes, & Vandals, and other northern nations (1658)",
+    "year": 1658,
+    "id": "b0391",
+    "type": "those involved in the labor of printing",
+    "number of people": 7
+  },
+  {
+    "book": "Robert Baron, Mirza a tragedie, really acted in Persia, in the last age (1647)",
+    "year": 1647,
+    "id": "b0024",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Robert Baron, Mirza. a tragedie, really acted in Persia, in the last age (1655)",
+    "year": 1655,
+    "id": "b0025",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Guido Bentivoglio, The compleat history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0034",
+    "type": "those involved in the labor of printing",
+    "number of people": 1
+  },
+  {
+    "book": "Guido Bentivoglio, The history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0035",
+    "type": "those involved in the labor of printing",
+    "number of people": 1
+  },
+  {
+    "book": "Richard Brome, Five new playes (1653)",
+    "year": 1653,
+    "id": "b0051",
+    "type": "those involved in the labor of printing",
+    "number of people": 4
+  },
+  {
+    "book": "Gauthier de Costes de La Calprenède, Hymen's preludia (1658)",
+    "year": 1658,
+    "id": "b0160",
+    "type": "those involved in the labor of printing",
+    "number of people": 2
+  },
+  {
+    "book": "Jean-Puget de la Serre, The secretary in fashion (1654)",
+    "year": 1654,
+    "id": "b0169",
+    "type": "those involved in the labor of printing",
+    "number of people": 1
+  },
+  {
+    "book": "David Lloyd, The legend of Captain Jones (1659)",
+    "year": 1659,
+    "id": "b0177",
+    "type": "those involved in the labor of printing",
+    "number of people": 1
+  },
+  {
+    "book": "William Sclater, A key to the key of Scripture (1629)",
+    "year": 1629,
+    "id": "b0316",
+    "type": "those involved in the labor of printing",
+    "number of people": 3
+  },
+  {
+    "book": "William Cartwright, Comedies, tragi-comedies, with other poems (1651)",
+    "year": 1651,
+    "id": "b0071",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Francis Beaumont, Comedies and tragedies (1647)",
+    "year": 1647,
+    "id": "b0026",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "Edward Benlowes, Theophila, or, Loves sacrifice (1652)",
+    "year": 1652,
+    "id": "b0032",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Nicholas Murford, Fragmenta poetica (1650)",
+    "year": 1650,
+    "id": "b0201",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Nathaniel Whiting, Le hore di recreatione: or, The pleasant historie of Albino and Bellama (1637)",
+    "year": 1637,
+    "id": "b0313",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Diego de San Pedro, A small treatise betwixt Arnalte and Lucenda entituled The evill-intreated lover (1639)",
+    "year": 1639,
+    "id": "b0333",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "Thomas De Grey, The compleat horse-man (1656)",
+    "year": 1656,
+    "id": "b0092",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Giovanni Francesco Biondi, Donzella desterrada (1635)",
+    "year": 1635,
+    "id": "b0323",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "John Gamble, Ayres and dialogues (1657)",
+    "year": 1657,
+    "id": "b0362",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Henry Lawes, Choice Psalmes put into musick (1648)",
+    "year": 1648,
+    "id": "b0172",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Virgilio Malvezzi, Romvlvs ; and, Tarqvin (1648)",
+    "year": 1648,
+    "id": "b0184",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "William Lithgow, The totall discourse, of the rare aduentures, and painefull peregrinations of long nineteene yeares trauayles, from Scotland, to the most famous kingdomes in Europe, Asia, and Affrica (1632)",
+    "year": 1632,
+    "id": "b0319",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Thomas Barker, Barker's delight: or, The art of angling (1659)",
+    "year": 1659,
+    "id": "b0023",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "John Fletcher, The wild-goose chase a comedie (1652)",
+    "year": 1652,
+    "id": "b0112",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "James Shirley, Poems, &c. (1646)",
+    "year": 1646,
+    "id": "b0258",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Magnus Olaus, A compendious history of the Goths, Svvedes, & Vandals, and other northern nations (1658)",
+    "year": 1658,
+    "id": "b0391",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "Robert Baron, Mirza a tragedie, really acted in Persia, in the last age (1647)",
+    "year": 1647,
+    "id": "b0024",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Robert Baron, Mirza. a tragedie, really acted in Persia, in the last age (1655)",
+    "year": 1655,
+    "id": "b0025",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Guido Bentivoglio, The compleat history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0034",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "Guido Bentivoglio, The history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0035",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "Richard Brome, Five new playes (1653)",
+    "year": 1653,
+    "id": "b0051",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "Gauthier de Costes de La Calprenède, Hymen's preludia (1658)",
+    "year": 1658,
+    "id": "b0160",
+    "type": "count of edges related to authorship",
+    "number of people": 2
+  },
+  {
+    "book": "Jean-Puget de la Serre, The secretary in fashion (1654)",
+    "year": 1654,
+    "id": "b0169",
+    "type": "count of edges related to authorship",
+    "number of people": 3
+  },
+  {
+    "book": "David Lloyd, The legend of Captain Jones (1659)",
+    "year": 1659,
+    "id": "b0177",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "William Sclater, A key to the key of Scripture (1629)",
+    "year": 1629,
+    "id": "b0316",
+    "type": "count of edges related to authorship",
+    "number of people": 1
+  },
+  {
+    "book": "William Cartwright, Comedies, tragi-comedies, with other poems (1651)",
+    "year": 1651,
+    "id": "b0071",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 53
+  },
+  {
+    "book": "Francis Beaumont, Comedies and tragedies (1647)",
+    "year": 1647,
+    "id": "b0026",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 36
+  },
+  {
+    "book": "Edward Benlowes, Theophila, or, Loves sacrifice (1652)",
+    "year": 1652,
+    "id": "b0032",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 11
+  },
+  {
+    "book": "Nicholas Murford, Fragmenta poetica (1650)",
+    "year": 1650,
+    "id": "b0201",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 15
+  },
+  {
+    "book": "Nathaniel Whiting, Le hore di recreatione: or, The pleasant historie of Albino and Bellama (1637)",
+    "year": 1637,
+    "id": "b0313",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 6
+  },
+  {
+    "book": "Diego de San Pedro, A small treatise betwixt Arnalte and Lucenda entituled The evill-intreated lover (1639)",
+    "year": 1639,
+    "id": "b0333",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 8
+  },
+  {
+    "book": "Thomas De Grey, The compleat horse-man (1656)",
+    "year": 1656,
+    "id": "b0092",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 8
+  },
+  {
+    "book": "Giovanni Francesco Biondi, Donzella desterrada (1635)",
+    "year": 1635,
+    "id": "b0323",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "John Gamble, Ayres and dialogues (1657)",
+    "year": 1657,
+    "id": "b0362",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "Henry Lawes, Choice Psalmes put into musick (1648)",
+    "year": 1648,
+    "id": "b0172",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 5
+  },
+  {
+    "book": "Virgilio Malvezzi, Romvlvs ; and, Tarqvin (1648)",
+    "year": 1648,
+    "id": "b0184",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "William Lithgow, The totall discourse, of the rare aduentures, and painefull peregrinations of long nineteene yeares trauayles, from Scotland, to the most famous kingdomes in Europe, Asia, and Affrica (1632)",
+    "year": 1632,
+    "id": "b0319",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "Thomas Barker, Barker's delight: or, The art of angling (1659)",
+    "year": 1659,
+    "id": "b0023",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "John Fletcher, The wild-goose chase a comedie (1652)",
+    "year": 1652,
+    "id": "b0112",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "James Shirley, Poems, &c. (1646)",
+    "year": 1646,
+    "id": "b0258",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 6
+  },
+  {
+    "book": "Magnus Olaus, A compendious history of the Goths, Svvedes, & Vandals, and other northern nations (1658)",
+    "year": 1658,
+    "id": "b0391",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 1
+  },
+  {
+    "book": "Robert Baron, Mirza a tragedie, really acted in Persia, in the last age (1647)",
+    "year": 1647,
+    "id": "b0024",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 6
+  },
+  {
+    "book": "Robert Baron, Mirza. a tragedie, really acted in Persia, in the last age (1655)",
+    "year": 1655,
+    "id": "b0025",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 6
+  },
+  {
+    "book": "Guido Bentivoglio, The compleat history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0034",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 6
+  },
+  {
+    "book": "Guido Bentivoglio, The history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0035",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 5
+  },
+  {
+    "book": "Richard Brome, Five new playes (1653)",
+    "year": 1653,
+    "id": "b0051",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 4
+  },
+  {
+    "book": "Gauthier de Costes de La Calprenède, Hymen's preludia (1658)",
+    "year": 1658,
+    "id": "b0160",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 5
+  },
+  {
+    "book": "Jean-Puget de la Serre, The secretary in fashion (1654)",
+    "year": 1654,
+    "id": "b0169",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 3
+  },
+  {
+    "book": "David Lloyd, The legend of Captain Jones (1659)",
+    "year": 1659,
+    "id": "b0177",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 7
+  },
+  {
+    "book": "William Sclater, A key to the key of Scripture (1629)",
+    "year": 1629,
+    "id": "b0316",
+    "type": "writers who contributed preliminary texts",
+    "number of people": 1
+  },
+  {
+    "book": "William Cartwright, Comedies, tragi-comedies, with other poems (1651)",
+    "year": 1651,
+    "id": "b0071",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Francis Beaumont, Comedies and tragedies (1647)",
+    "year": 1647,
+    "id": "b0026",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "Edward Benlowes, Theophila, or, Loves sacrifice (1652)",
+    "year": 1652,
+    "id": "b0032",
+    "type": "engravers who contributed plates",
+    "number of people": 2
+  },
+  {
+    "book": "Nicholas Murford, Fragmenta poetica (1650)",
+    "year": 1650,
+    "id": "b0201",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Nathaniel Whiting, Le hore di recreatione: or, The pleasant historie of Albino and Bellama (1637)",
+    "year": 1637,
+    "id": "b0313",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "Diego de San Pedro, A small treatise betwixt Arnalte and Lucenda entituled The evill-intreated lover (1639)",
+    "year": 1639,
+    "id": "b0333",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Thomas De Grey, The compleat horse-man (1656)",
+    "year": 1656,
+    "id": "b0092",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "Giovanni Francesco Biondi, Donzella desterrada (1635)",
+    "year": 1635,
+    "id": "b0323",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "John Gamble, Ayres and dialogues (1657)",
+    "year": 1657,
+    "id": "b0362",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "Henry Lawes, Choice Psalmes put into musick (1648)",
+    "year": 1648,
+    "id": "b0172",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Virgilio Malvezzi, Romvlvs ; and, Tarqvin (1648)",
+    "year": 1648,
+    "id": "b0184",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "William Lithgow, The totall discourse, of the rare aduentures, and painefull peregrinations of long nineteene yeares trauayles, from Scotland, to the most famous kingdomes in Europe, Asia, and Affrica (1632)",
+    "year": 1632,
+    "id": "b0319",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Thomas Barker, Barker's delight: or, The art of angling (1659)",
+    "year": 1659,
+    "id": "b0023",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "John Fletcher, The wild-goose chase a comedie (1652)",
+    "year": 1652,
+    "id": "b0112",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "James Shirley, Poems, &c. (1646)",
+    "year": 1646,
+    "id": "b0258",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Magnus Olaus, A compendious history of the Goths, Svvedes, & Vandals, and other northern nations (1658)",
+    "year": 1658,
+    "id": "b0391",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Robert Baron, Mirza a tragedie, really acted in Persia, in the last age (1647)",
+    "year": 1647,
+    "id": "b0024",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Robert Baron, Mirza. a tragedie, really acted in Persia, in the last age (1655)",
+    "year": 1655,
+    "id": "b0025",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Guido Bentivoglio, The compleat history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0034",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "Guido Bentivoglio, The history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0035",
+    "type": "engravers who contributed plates",
+    "number of people": 2
+  },
+  {
+    "book": "Richard Brome, Five new playes (1653)",
+    "year": 1653,
+    "id": "b0051",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "Gauthier de Costes de La Calprenède, Hymen's preludia (1658)",
+    "year": 1658,
+    "id": "b0160",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "Jean-Puget de la Serre, The secretary in fashion (1654)",
+    "year": 1654,
+    "id": "b0169",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "David Lloyd, The legend of Captain Jones (1659)",
+    "year": 1659,
+    "id": "b0177",
+    "type": "engravers who contributed plates",
+    "number of people": 1
+  },
+  {
+    "book": "William Sclater, A key to the key of Scripture (1629)",
+    "year": 1629,
+    "id": "b0316",
+    "type": "engravers who contributed plates",
+    "number of people": 0
+  },
+  {
+    "book": "William Cartwright, Comedies, tragi-comedies, with other poems (1651)",
+    "year": 1651,
+    "id": "b0071",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Francis Beaumont, Comedies and tragedies (1647)",
+    "year": 1647,
+    "id": "b0026",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Edward Benlowes, Theophila, or, Loves sacrifice (1652)",
+    "year": 1652,
+    "id": "b0032",
+    "type": "named dedicatees",
+    "number of people": 0
+  },
+  {
+    "book": "Nicholas Murford, Fragmenta poetica (1650)",
+    "year": 1650,
+    "id": "b0201",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Nathaniel Whiting, Le hore di recreatione: or, The pleasant historie of Albino and Bellama (1637)",
+    "year": 1637,
+    "id": "b0313",
+    "type": "named dedicatees",
+    "number of people": 2
+  },
+  {
+    "book": "Diego de San Pedro, A small treatise betwixt Arnalte and Lucenda entituled The evill-intreated lover (1639)",
+    "year": 1639,
+    "id": "b0333",
+    "type": "named dedicatees",
+    "number of people": 2
+  },
+  {
+    "book": "Thomas De Grey, The compleat horse-man (1656)",
+    "year": 1656,
+    "id": "b0092",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Giovanni Francesco Biondi, Donzella desterrada (1635)",
+    "year": 1635,
+    "id": "b0323",
+    "type": "named dedicatees",
+    "number of people": 2
+  },
+  {
+    "book": "John Gamble, Ayres and dialogues (1657)",
+    "year": 1657,
+    "id": "b0362",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Henry Lawes, Choice Psalmes put into musick (1648)",
+    "year": 1648,
+    "id": "b0172",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Virgilio Malvezzi, Romvlvs ; and, Tarqvin (1648)",
+    "year": 1648,
+    "id": "b0184",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "William Lithgow, The totall discourse, of the rare aduentures, and painefull peregrinations of long nineteene yeares trauayles, from Scotland, to the most famous kingdomes in Europe, Asia, and Affrica (1632)",
+    "year": 1632,
+    "id": "b0319",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Thomas Barker, Barker's delight: or, The art of angling (1659)",
+    "year": 1659,
+    "id": "b0023",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "John Fletcher, The wild-goose chase a comedie (1652)",
+    "year": 1652,
+    "id": "b0112",
+    "type": "named dedicatees",
+    "number of people": 0
+  },
+  {
+    "book": "James Shirley, Poems, &c. (1646)",
+    "year": 1646,
+    "id": "b0258",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Magnus Olaus, A compendious history of the Goths, Svvedes, & Vandals, and other northern nations (1658)",
+    "year": 1658,
+    "id": "b0391",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Robert Baron, Mirza a tragedie, really acted in Persia, in the last age (1647)",
+    "year": 1647,
+    "id": "b0024",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Robert Baron, Mirza. a tragedie, really acted in Persia, in the last age (1655)",
+    "year": 1655,
+    "id": "b0025",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Guido Bentivoglio, The compleat history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0034",
+    "type": "named dedicatees",
+    "number of people": 0
+  },
+  {
+    "book": "Guido Bentivoglio, The history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0035",
+    "type": "named dedicatees",
+    "number of people": 0
+  },
+  {
+    "book": "Richard Brome, Five new playes (1653)",
+    "year": 1653,
+    "id": "b0051",
+    "type": "named dedicatees",
+    "number of people": 0
+  },
+  {
+    "book": "Gauthier de Costes de La Calprenède, Hymen's preludia (1658)",
+    "year": 1658,
+    "id": "b0160",
+    "type": "named dedicatees",
+    "number of people": 1
+  },
+  {
+    "book": "Jean-Puget de la Serre, The secretary in fashion (1654)",
+    "year": 1654,
+    "id": "b0169",
+    "type": "named dedicatees",
+    "number of people": 2
+  },
+  {
+    "book": "David Lloyd, The legend of Captain Jones (1659)",
+    "year": 1659,
+    "id": "b0177",
+    "type": "named dedicatees",
+    "number of people": 0
+  },
+  {
+    "book": "William Sclater, A key to the key of Scripture (1629)",
+    "year": 1629,
+    "id": "b0316",
+    "type": "named dedicatees",
+    "number of people": 5
+  },
+  {
+    "book": "William Cartwright, Comedies, tragi-comedies, with other poems (1651)",
+    "year": 1651,
+    "id": "b0071",
+    "type": "named composers who contributed music",
+    "number of people": 1
+  },
+  {
+    "book": "Francis Beaumont, Comedies and tragedies (1647)",
+    "year": 1647,
+    "id": "b0026",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Edward Benlowes, Theophila, or, Loves sacrifice (1652)",
+    "year": 1652,
+    "id": "b0032",
+    "type": "named composers who contributed music",
+    "number of people": 1
+  },
+  {
+    "book": "Nicholas Murford, Fragmenta poetica (1650)",
+    "year": 1650,
+    "id": "b0201",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Nathaniel Whiting, Le hore di recreatione: or, The pleasant historie of Albino and Bellama (1637)",
+    "year": 1637,
+    "id": "b0313",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Diego de San Pedro, A small treatise betwixt Arnalte and Lucenda entituled The evill-intreated lover (1639)",
+    "year": 1639,
+    "id": "b0333",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Thomas De Grey, The compleat horse-man (1656)",
+    "year": 1656,
+    "id": "b0092",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Giovanni Francesco Biondi, Donzella desterrada (1635)",
+    "year": 1635,
+    "id": "b0323",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "John Gamble, Ayres and dialogues (1657)",
+    "year": 1657,
+    "id": "b0362",
+    "type": "named composers who contributed music",
+    "number of people": 1
+  },
+  {
+    "book": "Henry Lawes, Choice Psalmes put into musick (1648)",
+    "year": 1648,
+    "id": "b0172",
+    "type": "named composers who contributed music",
+    "number of people": 2
+  },
+  {
+    "book": "Virgilio Malvezzi, Romvlvs ; and, Tarqvin (1648)",
+    "year": 1648,
+    "id": "b0184",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "William Lithgow, The totall discourse, of the rare aduentures, and painefull peregrinations of long nineteene yeares trauayles, from Scotland, to the most famous kingdomes in Europe, Asia, and Affrica (1632)",
+    "year": 1632,
+    "id": "b0319",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Thomas Barker, Barker's delight: or, The art of angling (1659)",
+    "year": 1659,
+    "id": "b0023",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "John Fletcher, The wild-goose chase a comedie (1652)",
+    "year": 1652,
+    "id": "b0112",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "James Shirley, Poems, &c. (1646)",
+    "year": 1646,
+    "id": "b0258",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Magnus Olaus, A compendious history of the Goths, Svvedes, & Vandals, and other northern nations (1658)",
+    "year": 1658,
+    "id": "b0391",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Robert Baron, Mirza a tragedie, really acted in Persia, in the last age (1647)",
+    "year": 1647,
+    "id": "b0024",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Robert Baron, Mirza. a tragedie, really acted in Persia, in the last age (1655)",
+    "year": 1655,
+    "id": "b0025",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Guido Bentivoglio, The compleat history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0034",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Guido Bentivoglio, The history of the warrs of Flanders (1654)",
+    "year": 1654,
+    "id": "b0035",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Richard Brome, Five new playes (1653)",
+    "year": 1653,
+    "id": "b0051",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Gauthier de Costes de La Calprenède, Hymen's preludia (1658)",
+    "year": 1658,
+    "id": "b0160",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "Jean-Puget de la Serre, The secretary in fashion (1654)",
+    "year": 1654,
+    "id": "b0169",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "David Lloyd, The legend of Captain Jones (1659)",
+    "year": 1659,
+    "id": "b0177",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  },
+  {
+    "book": "William Sclater, A key to the key of Scripture (1629)",
+    "year": 1629,
+    "id": "b0316",
+    "type": "named composers who contributed music",
+    "number of people": 0
+  }
+]
+
+  var visualization = d3plus.viz()
+    .container("#viz")
+    .data(data)
+    .type("bar")
+    .id("type")
+    .x("book")
+    .y({"stacked": true, "value": "number of people"})
+    .order({"stacked": true, "value": "number of people"})
+    .draw()
+
+</script>
+</body>
+</html>
